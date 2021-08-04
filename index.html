@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <title>Money</title>
+      <meta name="description" content="Money Log">
+      <meta name="author" content="David Scott Bowen">
+      <!--   <link rel="stylesheet" href="css/styles.css?v=1.0"> -->
+      <!-- Bootstrap CSS -->
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+         crossorigin="anonymous">
+      <style>
+         .button {
+         background-color: #008CBA;
+         /* Green */
+         border: none;
+         color: white;
+         padding: 14px 31px;
+         text-align: center;
+         text-decoration: none;
+         display: inline-block;
+         font-size: 14px;
+         margin: 3px 1px;
+         cursor: pointer;
+         }
+      </style>
+   </head>
+   <body>
+      </br>
+      </br>
+      </br>
+      </br>
+      <center>
+         <div class="form-group">
+            <a class="button" id="submit" onclick="submit()">submit</a>
+         </div>
+
+            <div id="total">
+                <class="ellipsis" id="total" style="width:100%">
+              
+                <!-- We will use javascript to insert html for the orders list here -->
+                <!-- if you don't want orders to show on the homepage, you can duplicate the page and remove this from here, leave the other one with a werid name so only you can find it -->
+            </div>
+
+
+            <div id="previousOrders">
+                <class="ellipsis" id="previousOrders" style="width:100%">
+              
+                <!-- We will use javascript to insert html for the orders list here -->
+                <!-- if you don't want orders to show on the homepage, you can duplicate the page and remove this from here, leave the other one with a werid name so only you can find it -->
+            </div>
+         </div>
+
+      </center>
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+
+      <!-- The core Firebase JS SDK is always required and must be listed first -->
+      <script src="https://www.gstatic.com/firebasejs/8.2.6/firebase-app.js"></script>
+      <!-- TODO: Add SDKs for Firebase products that you want to use
+         https://firebase.google.com/docs/web/setup#available-libraries -->
+      <script src="https://www.gstatic.com/firebasejs/8.2.6/firebase-analytics.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/8.2.6/firebase-database.js"></script>
+      <script>
+         // Your web app's Firebase configuration
+         // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyCE6EotgDCOJmZFxgPp8_DqONu8bpMUIag",
+            authDomain: "money-95eec.firebaseapp.com",
+            databaseURL: "https://money-95eec-default-rtdb.firebaseio.com",
+            projectId: "money-95eec",
+            storageBucket: "money-95eec.appspot.com",
+            messagingSenderId: "419416371249",
+            appId: "1:419416371249:web:0a339b994f9f00095ba510"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+               
+              var dateObj = new Date();
+              var month = dateObj.getMonth() + 1; //months from 1-12
+              var day = dateObj.getDate();
+              var year = dateObj.getFullYear();
+
+              var today = (year + '-' + month + '-' + day);
+              
+
+               var database = firebase.database();
+               //create a variable to hold our orders list from firebase
+               // var firebaseOrdersCollection = database.ref().child(today);
+                var firebaseOrdersCollection = database.ref().child('entry');
+         
+          
+        //create a 'listener' which waits for changes to the values inside the firebaseOrdersCollection 
+        firebaseOrdersCollection.on('value', function (orders) {
+            //create an empty string that will hold our new HTML
+            var bookArray = [];
+
+            var allOrdersHtml = "";
+            //this is saying foreach order do the following function...
+            orders.forEach(function (firebaseOrderReference) {
+                //this gets the actual data (JSON) for the order.
+                var order = firebaseOrderReference.val();
+                bookArray.push(order);
+
+            });
+            for (i = 0; i < bookArray.length; i++) {
+
+                var individialOrderHtml =  bookArray[i].saveDate + '</br>';
+             
+                allOrdersHtml = allOrdersHtml + individialOrderHtml;
+              }
+
+            $('#total').html('Total: ' + bookArray.length)  
+            $('#previousOrders').html(allOrdersHtml)
+        });
+
+          function submit() {
+                   var d = Date();
+                   var entry = {
+                       saveDate: d.toString()
+                       // console.log('saveDate: ' + saveDate);
+                       // saveDate: 'Sun Feb 21 2021 18:00:00 GMT-0500 (Eastern Standard Time)'
+                   };
+                   //'push' (aka add) your order to the existing list
+                   // firebaseOrdersCollection.push(order); //'orders' is the name of the 'collection' (aka database table)
+                   firebaseOrdersCollection.child(entry.saveDate).set(entry);
+               };
+         
+         
+         
+         
+         firebase.analytics();
+      </script>
+   </body>
+</html>
